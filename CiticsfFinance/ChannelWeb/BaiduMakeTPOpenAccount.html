@@ -1,0 +1,646 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="format-detection" content="telephone=yes" />
+    <meta name="viewport" content="width=device-width, initial-scale=1,maxinum-scale=1" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>中信期货有限公司</title>
+    <meta name="keywords" content="中信期货有限公司" />
+    <meta name="description" content="中信期货有限公司" />
+    <link href="../CSS/bootstrap.css" rel="stylesheet" />
+    <link href="../CSS/baidustyle.css" rel="stylesheet" />
+    <link href="../Scripts/Base/XrDialog/XrDialog.css" rel="stylesheet" />
+    <link href="../CSS/font-awesome.css" rel="stylesheet" />
+    <link href="../Scripts/Base/mui/css/mui.min.css" rel="stylesheet" />
+    <link href="../Scripts/Base/mui/css/app.css" rel="stylesheet" />
+    <script src="../Scripts/Base/jquery.min.js"></script>
+    <script src="../Scripts/Base/XrDialog/XrDialog.js"></script>
+    <!-- <script src="../../SilverSoftFramework/SilverSoft.Robot.ashx" type="text/javascript"></script> -->
+  <!--   <script src="../Scripts/Base/Common.js"></script> -->
+    <!-- <script src="../Scripts/Base/CryptoJS312/rollups/tripledes.js"></script>
+    <script src="../Scripts/Base/CryptoJS312/components/mode-ecb.js"></script>
+    <script src="../Scripts/Base/mui/js/mui.min.js"></script> -->
+    <style type="text/css">
+        a:link {
+            text-decoration: none;
+        }
+
+        @media (min-width: 992px) {
+            .container {
+                width: 100%;
+                max-width: 100%;
+            }
+        }
+
+        .m-bg input {
+            border: none;
+        }
+
+        .offset-1-temp {
+            margin-left: 5%;
+        }
+
+        .col-10-temp {
+            -webkit-box-flex: 0;
+            -ms-flex: 0 0 90%;
+            flex: 0 0 90%;
+            max-width: 90%;
+        }
+
+        .col-6-temp {
+            -webkit-box-flex: 0;
+            -ms-flex: 0 0 50%;
+            flex: 0 0 50%;
+            max-width: 50%;
+        }
+
+        .col-4-temp {
+            -webkit-box-flex: 0;
+            -ms-flex: 0 0 40%;
+            flex: 0 0 40%;
+            max-width: 40%;
+        }
+        .btn_Submit{
+            position: relative;
+            z-index: 0;
+        }
+        .btn_Submit:after{
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('../Images/baidu1_download_app.png');
+            background-size: cover;
+            z-index: -1;
+        }
+    </style>
+    <script type="text/javascript">
+        var countdown = 60;
+        $(function () {
+            InitPage();
+            var bd_vid = SilverSoft.Robot.QueryString('bd_vid');
+            window.alert = function (name) {
+                var iframe = document.createElement("IFRAME");
+                iframe.style.display = "none";
+                iframe.setAttribute("src", 'data:text/plain');
+                document.documentElement.appendChild(iframe);
+                window.frames[0].window.alert(name);
+                iframe.parentNode.removeChild(iframe);
+            }
+
+            let u = navigator.userAgent;
+            let isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1; //g
+            let isIOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+            if (isAndroid) {
+                GetAndroidDeviceVersion();
+            }
+            else {
+                GetiOSDeviceVersion();
+            }
+
+            $("#btn_Submit").click(function () {
+                var isCheck = $("#img_check").attr("lang");
+                if (isCheck == "1") {
+                    var param = new SilverSoft.Param('../Handler/Account/SaveOpenPhoneBaiduTP.ashx');
+                    param.Model.Phone = $("#txt_Phone").val();
+                    if (SilverSoft.Robot.IsNullOrWhiteSpace(param.Model.Phone)) {
+                        $.alert("请输入您的手机号码！");
+                        return false;
+                    }
+                    var phoneReg = /^1[0-9]{1}\d{9}$/;
+                    if (!phoneReg.test(param.Model.Phone)) {
+                        $.alert("请输入有效的手机号码！");
+                        return false;
+                    }
+                    if (!SilverSoft.Robot.IsNullOrWhiteSpace(bd_vid)) {
+                        param.Model.FutherChannelNetID = bd_vid;
+                    }
+                    param.Expand.ExtraString002 = $("#txt_ValidateCode").val();
+                    if (SilverSoft.Robot.IsNullOrWhiteSpace(param.Expand.ExtraString002)) {
+                        $.alert("请输入手机验证码！");
+                        return false;
+                    }
+                    param.Expand.ExtraString003 = location.href;
+                    SilverSoft.Robot.CallAsync(param, function (box) {
+                        if (box.Success) {
+                            fnDownLoadApp();//下载中信期货通App
+                        } else {
+                            $.alert(box.Error);
+                            refreshCode();//加载验证码
+                        }
+                    });
+                } else {
+                    $.alert("请先阅读并同意隐私条款和应用权限！");
+                    return false;
+                }
+            });
+        });
+
+        function submitClick() {
+            var isCheck = $("#img_check").attr("lang");
+            if (isCheck == "1") {
+                var param = new SilverSoft.Param('../Handler/Account/SaveOpenPhoneBaiduTP.ashx');
+                param.Model.Phone = $("#txt_Phone").val();
+                if (SilverSoft.Robot.IsNullOrWhiteSpace(param.Model.Phone)) {
+                    $.alert("请输入您的手机号码！");
+                    return false;
+                }
+                var phoneReg = /^1[0-9]{1}\d{9}$/;
+                if (!phoneReg.test(param.Model.Phone)) {
+                    $.alert("请输入有效的手机号码！");
+                    return false;
+                }
+                if (!SilverSoft.Robot.IsNullOrWhiteSpace(bd_vid)) {
+                    param.Model.FutherChannelNetID = bd_vid;
+                }
+                param.Expand.ExtraString002 = $("#txt_ValidateCode").val();
+                if (SilverSoft.Robot.IsNullOrWhiteSpace(param.Expand.ExtraString002)) {
+                    $.alert("请输入手机验证码！");
+                    return false;
+                }
+                param.Expand.ExtraString003 = location.href;
+                SilverSoft.Robot.CallAsync(param, function (box) {
+                    if (box.Success) {
+                        fnDownLoadApp();//下载中信期货通App
+                    } else {
+                        $.alert(box.Error);
+                        //refreshCode();//加载验证码
+                    }
+                });
+            } else {
+                $.alert("请先阅读并同意隐私条款和应用权限！");
+                return false;
+            }
+        }
+
+        function imgcheckclick() {
+            var isCheck = $("#img_check").attr("lang");
+            if (isCheck == "1") {
+                $("#img_check").attr("lang", "0");
+                $("#img_check").attr("src", "../Images/uc_nocheck.png");
+            } else {
+                $("#img_check").attr("lang", "1");
+                $("#img_check").attr("src", "../Images/uc_checked.png");
+            }
+        }
+
+        window.onresize = function () {
+            InitPage();
+        }
+
+        function InitPage() {
+            var viewWidth = window.innerWidth;
+            var viewHeight = window.innerHeight;
+            var aa = $("#lbl_ValidateCode").height();
+            if (IsPC()) {
+                GetAndroidDeviceVersionPc();
+            }
+            if (aa <= 45) {
+                $("#lbl_ValidateCode").css("height", "45px");
+                $("#lbl_ValidateCode").css("line-height", "45px");
+                $("#btn_Submit").css("height", "45px");
+                $("#btn_Submit").css("line-height", "45px");
+            } else {
+                $("#lbl_ValidateCode").css("height", "3vw");
+                $("#lbl_ValidateCode").css("line-height", "3vw");
+                $("#btn_Submit").css("height", "45px");
+                $("#btn_Submit").css("line-height", "45px");
+            }
+            if (viewWidth >= 992) {
+                //$(".container").css("width", "992px");
+                //$("#div_bottom_m").hide();
+                //$("#div_bottom_pc").show();
+                //$("#bg_img").attr("src", "../Images/bg_baidu_pc.png");
+                $("#div_content").css({ "top": "140px", "left": "62%", "width": "350px", "background-color": "#C42E41", "border-radius": "10px" });
+                $(".m-bg").css({ "margin-top": "10px", "margin-bottom": "10px" });
+                $("#lbl_ValidateCode").css({ "height": "35px", "line-height": "35px", "margin-top": "6px", "cursor": "pointer" });
+                $("#txt_Phone").css({ "height": "35px", "line-height": "35px", "min-height": "35px" });
+                $("#txt_ValidateCode").css({ "height": "35px", "line-height": "35px", "min-height": "35px" });
+                $("#div_Submit").html("<div id=\"btn_Submit\" onclick=\"submitClick()\" data-agl-cvt=\"6\" style=\" display:block!important;height: 35px; line-height: 35px; font-size: 16px; background-color: #EFD3AB; margin:0px auto; color: #BF2637;margin-bottom:10px; width: 100%; text-align: center; border-radius: 20px;\">立即预约</div>");
+                $("#btn_Submit").css({ "height": "35px", "line-height": "35px", "margin-bottom": "10px", "width": "70%", "text-align": "center", "cursor": "pointer" });
+                $(".container").css("width", "100%");
+
+                $("#bg_imgpc").show();
+                $("#bg_img").hide();
+                $("#div_bottom_m").hide();
+                $("#pc_baidu_bottom").hide();
+                $(".pc_sjtk").hide();
+                $(".pc_baidu").show();
+                $("#div_pc_sjtk").empty();
+                $("#div_pc_baidu").empty();
+                $("#div_pc_baidu").html("<p style=\"color: #fff; font-size: 0.8em; text-align: center; margin-bottom: 15px;margin-top: 10px; line-height: 16px;\"><img id=\"img_check\" onclick=\"imgcheckclick()\" src=\"../Images/uc_nocheck.png\" lang=\"0\" style=\"width: 16px; height: 16px;margin-right:10px;\" />我已阅读并同意<a href=\"https://citicsf-finance-001.citicsf.com/CiticsfFinance/WebUI/CiticsfPrivacyPolicy.html\" style=\"color: #E6B980; cursor: pointer;\">隐私条款</a>和<a href=https://citicsf-finance-001.citicsf.com/CiticsfFinance/WebUI/CiticsfAppJurisdiction.html style=color: #E6B980; cursor: pointer;>应用权限</a></p>");
+                $("#pc_row").css("margin-bottom", "0px");
+            } else {
+                $("#div_Submit").html("<div id=\"btn_Submit\" class=\"btn_Submit\" onclick=\"submitClick()\" data-agl-cvt=\"6\" style=\" display:block!important;margin: 8px auto 6px; width: 206px;  height: 45px; line-height: 50px; cursor: pointer; color: #BF2637; font-weight: 500; text-align: center; max-width: 300px;\">下载APP开户</div>");
+                //$("#div_bottom_m").show();
+                //$("#div_bottom_pc").hide();
+                $("#pc_row").css("margin-bottom", "55px");
+                $(".pc_sjtk").show();
+                $(".pc_baidu").hide();
+                $("#div_pc_sjtk").empty();
+                $("#div_pc_baidu").empty();
+                $("#div_pc_sjtk").html("<p style=\"color: #fff; font-size: 0.8em; text-align: center; margin-bottom: 15px;margin-top: 10px; line-height: 16px;\"><img id=\"img_check\" onclick=\"imgcheckclick()\" src=\"../Images/uc_nocheck.png\" lang=\"0\" style=\"width: 16px; height: 16px;margin-right:10px;\" />我已阅读并同意<a href=\"https://citicsf-finance-001.citicsf.com/CiticsfFinance/WebUI/CiticsfPrivacyPolicy.html\" style=\"color: #E6B980; cursor: pointer;\">隐私条款</a>和<a href=https://citicsf-finance-001.citicsf.com/CiticsfFinance/WebUI/CiticsfAppJurisdiction.html style=color: #E6B980; cursor: pointer;>应用权限</a></p>");
+
+                $("#bg_imgpc").hide();
+                $("#bg_img").show();
+                $("#div_bottom_m").show();
+                $("#pc_baidu_bottom").show();
+                $("#div_content").css({ "left": "0%", "width": "100%", "background-color": "transparent", "border-radius": "0px" });
+                if (viewWidth >= 500) {
+                    $("#div_content").css("top", "14%");
+                    $("#div_content input").css("margin", "20px 0");
+                    $("#lbl_ValidateCode").css("margin-top", "20px");
+                    $("#btn_Submit").css("margin-bottom", "20px");
+                } else if (viewWidth < 500 && viewWidth > 375) {
+                    $("#div_content").css("top", "12.6%");
+                    $("#div_content input").css("margin", "8px 0");
+                    $("#lbl_ValidateCode").css("margin-top", "8px");
+                    $("#btn_Submit").css("margin-bottom", "8px");
+                } else if (viewWidth <= 375 && viewWidth > 320) {
+                    $("#div_content").css("top", "12.2%");
+                    $("#div_content input").css("margin", "6px 0");
+                    $("#lbl_ValidateCode").css("margin-top", "6px");
+                    $("#btn_Submit").css("margin-bottom", "6px");
+                }
+                else {
+                    $("#div_content").css("top", "11.6%");
+                    $("#div_content input").css("margin", "4px 0");
+                    $("#lbl_ValidateCode").css("margin-top", "4px");
+                }
+            }
+        }
+
+        function IsPC() {
+            var userAgentInfo = navigator.userAgent;
+            var Agents = ["Android", "iPhone", "SymbianOS", "Windows Phone", "iPad", "iPod"];
+            var flag = true;
+            for (var v = 0; v < Agents.length; v++) {
+                if (userAgentInfo.indexOf(Agents[v]) > 0) {
+                    flag = false;
+                    break;
+                }
+            }
+            console.log(userAgentInfo);
+            return flag;
+        }
+
+        function fnDownLoadApp() {
+            if (IsPC()) {
+                mui.alert("<div><table style=\"width:100%;text-align:center\"><tr><td><lable style=\"color:red\">免费极速开户</lable></td></tr><tr><td><img src=\"../Images/zxqht_app_qrcode.png\" style=\"width: 200px; height: 200px\" /></td></tr></table></div>", "扫码下载中信期货APP", "确定", null, "div");
+            } else {
+                window.location.href = "../AppUpload.aspx";
+            }
+        }
+
+        //获取手机验证码
+        function fnGetValidateCode() {
+            var param = new SilverSoft.Param('../AppHandler/Common/SendCode.ashx');
+            var input_Phone = $("#txt_Phone").val();
+            if (SilverSoft.Robot.IsNullOrWhiteSpace(input_Phone)) {
+                alert("请输入您的手机号码！");
+                return false;
+            }
+            if (!CheckNum(input_Phone)) {
+                alert("请输入正确的手机号码！");
+                return false;
+            }
+            var Parms = new Object();
+            Parms['Moblie'] = input_Phone
+            Parms['ValidateType'] = 16;//第三方活动注册用户
+            param.inputbody = encryptByDES(ToJsonStr(Parms));
+            param.licensekey = licensekey;
+            settime();//倒计时60秒
+            var box = SilverSoft.Robot.Call(param);
+        }
+
+        //倒计时60秒
+        function settime() {
+            if (countdown == 0) {
+                $("#lbl_ValidateCode").removeAttr("disabled");
+                $("#lbl_ValidateCode").html("重新获取");
+                countdown = 60;
+            } else {
+                $("#lbl_ValidateCode").attr('disabled', "true");
+                $("#lbl_ValidateCode").html(countdown + "秒后重发");
+                countdown--;
+                setTimeout(function () {
+                    settime();
+                }, 1000)
+            }
+        }
+
+        //获取APP版本号（苹果）
+        function GetiOSDeviceVersion() {
+            var Version = "4.1.5";
+            var UpdateTime = "2021-8-29";
+            var param = new SilverSoft.Param('CiticsfFinance.DeviceManage.GetiOSDeviceVersion()');
+            SilverSoft.Robot.CallAsync(param, function (box) {
+                if (box.RowCount > 0) {
+                    var data = box.Data;
+                    if (!SilverSoft.Robot.IsNullOrWhiteSpace(data[0].VersionNumber)) {
+                        Version = data[0].VersionNumber;
+                    }
+                    if (!SilverSoft.Robot.IsNullOrWhiteSpace(data[0].UpdateTime)) {
+                        UpdateTime = data[0].UpdateTime.ToDateString("yyyy-MM-dd");
+                    }
+                }
+                $("#lbl_Version").text(Version);
+                $("#lbl_UpdateTime").text(UpdateTime);
+            });
+        }
+
+        //获取APP版本号（安卓）
+        function GetAndroidDeviceVersion() {
+            var Version = "4.4.0";
+            var UpdateTime = "2021-8-29";
+            var param = new SilverSoft.Param('CiticsfFinance.DeviceManage.GetAndroidDeviceVersion()');
+            SilverSoft.Robot.CallAsync(param, function (box) {
+                if (box.RowCount > 0) {
+                    var data = box.Data;
+                    if (!SilverSoft.Robot.IsNullOrWhiteSpace(data[0].VersionNumber)) {
+                        Version = data[0].VersionNumber;
+                    }
+                    if (!SilverSoft.Robot.IsNullOrWhiteSpace(data[0].UpdateTime)) {
+                        UpdateTime = data[0].UpdateTime.ToDateString("yyyy-MM-dd");
+                    }
+                }
+                $("#lbl_Version").text(Version);
+                $("#lbl_UpdateTime").text(UpdateTime);
+            });
+        }
+
+        //获取APP版本号（安卓）
+        function GetAndroidDeviceVersionPc() {
+            var Version = "4.4.0";
+            var UpdateTime = "2021-8-29";
+            var param = new SilverSoft.Param('CiticsfFinance.DeviceManage.GetAndroidDeviceVersion()');
+            SilverSoft.Robot.CallAsync(param, function (box) {
+                if (box.RowCount > 0) {
+                    var data = box.Data;
+                    if (!SilverSoft.Robot.IsNullOrWhiteSpace(data[0].VersionNumber)) {
+                        Version = data[0].VersionNumber;
+                    }
+                    if (!SilverSoft.Robot.IsNullOrWhiteSpace(data[0].UpdateTime)) {
+                        UpdateTime = data[0].UpdateTime.ToDateString("yyyy-MM-dd");
+                    }
+                }
+                $("#pc_ban").text(Version);
+                $("#pc_sj").text(UpdateTime);
+            });
+        }
+
+    </script>
+</head>
+
+
+
+<body>
+    <div class="container pc_baidu" style="background-color: white;width: 100%;height: 60px;">
+
+        <div style="margin-left: 1%;float: left;line-height: 60px;">
+            <a href="https://www.citicsf.com/"> <img src="../Images/Baidu/bg_gw.png" style="height: 30px;" /></a>
+        </div>
+        <div style="line-height: 60px;font-size: 12px;float:right; text-align: center;margin-right: 1%;">
+            <span>
+                <a href="https://v2.live800.com/live800/chatClient/chatbox.jsp?companyID=657916&configID=129248&jid=9949048082&skillId=7231&s=1" style="color: #333;">
+                    <span><img src="../Images/Baidu/kf.png" style="height: 16px;" /></span>
+                    在线客服
+                </a>
+            </span>|
+            <span>
+                <a id="lbl_clickphone" style="color: #333;">
+                    <span><img src="../Images/Baidu/tel.png" style="height: 16px;margin-bottom: 2px;" /></span>
+                    电话客服
+                </a>
+            </span>
+        </div>
+        <div id="pc_baidu_kf" style="position: fixed;left: 90%; bottom: 20%; height: 55px; width: 100%;z-index:99">
+            <div>
+                <a id="call2" href="https://v2.live800.com/live800/chatClient/chatbox.jsp?companyID=657916&configID=129248&jid=9949048082&skillId=7231&s=1" style="color: #333;">
+                    <span style="">
+                        <img src="../Images/Baidu/btn_kf@2x.png" style="height: 70px;" />
+                    </span>
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="container" style="background-color: #D02B2F;">
+        <div class="row" id="pc_row" style="margin-bottom: 55px;">
+            <div style="position: relative;">
+                <img id="bg_img" src="../Images/baidu1_bg.png?v=03" class="img-fluid" alt="" />
+                <img id="bg_imgpc" src="../Images/Baidu/bg_baidu_pc01.jpg" class="img-fluid" alt="" style="height:600px;width: 100%;" />
+                <div id="div_content" style="position: absolute; top: 15.5%; width: 100%; display: block">
+                    <div class="pc_baidu" style="color: #fee6cc;text-align: center;margin-top: 23px;font-size: 22px;">一站式综合金融平台</div>
+                    <div class="m-bg" style="margin-top: 21px; margin-bottom: 0;">
+                        <div class="col-10 offset-1">
+                            <input id="txt_Phone" type="text" placeholder="请输入您的手机号" style="height: 3vw; min-height: 45px; margin-top: 6px; margin-bottom: 6px; border-radius: 5px; font-size: 16px;" />
+                        </div>
+                        <div class="col-6 offset-1">
+                            <input id="txt_ValidateCode" type="text" placeholder="请输入验证码" style="height: 3vw; min-height: 45px; margin-top: 6px; margin-bottom: 6px; border-radius: 5px; font-size: 16px;" />
+                        </div>
+                        <div class="col-4" style="text-align: right; height: 3vw;">
+                            <div id="lbl_ValidateCode" onclick="fnGetValidateCode()" style="height: 3vw; line-height: 3vw; font-size: 16px; background: url(../Images/uc_yzm.png) no-repeat; background-size: cover; color: #BF2637; width: 90%; float: right; text-align: center; border-radius: 5px;">获取验证码</div>
+                        </div>
+                        <div class="col-10 offset-1 pc_baidu" id="div_pc_baidu">
+
+                        </div>
+                        <!--百度埋码 data-agl-cvt="6"-->
+                        <div id="div_Submit" class="col-10 offset-1" style="display:block!important;">
+                            <!--<div id="btn_Submit" data-agl-cvt="6" style="margin: 8px auto 6px; width: 206px;  height: 45px; line-height: 50px; background: url(../Images/baidu1_download_app.png) no-repeat; background-size: cover; cursor: pointer; color: #BF2637; font-weight: 500; text-align: center; max-width: 300px;">下载APP开户</div>-->
+
+                        </div>
+                        <div class="col-10 offset-1 pc_sjtk" id="div_pc_sjtk">
+
+                        </div>
+                    </div>
+                </div>
+                <style type="text/css">
+                    .content_bottom_m {
+                        position: absolute;
+                        top: 91%;
+                        width: 100%;
+                        padding: 10px 10px;
+                    }
+
+                        .content_bottom_m div {
+                            color: #E6C3A3;
+                            text-align: center;
+                        }
+
+                        .content_bottom_m p {
+                            margin-bottom: 0.2rem;
+                        }
+
+
+                    @media (min-width: 300px) {
+                        .content_bottom_m {
+                            top: 89%;
+                            font-size: 11px;
+                        }
+                    }
+
+                    @media (min-width: 350px) {
+                        .content_bottom_m {
+                            top: 89.2%;
+                            font-size: 12px;
+                        }
+                    }
+
+                    @media (min-width: 400px) {
+                        .content_bottom_m {
+                            top: 89.4%;
+                            font-size: 13px;
+                        }
+                    }
+
+                    @media (min-width: 450px) {
+                        .content_bottom_m {
+                            top: 89.6%;
+                            font-size: 14px;
+                        }
+                    }
+
+                    @media (min-width: 500px) {
+                        .content_bottom_m {
+                            top: 89.8%;
+                            font-size: 15px;
+                        }
+                    }
+
+                    @media (min-width: 550px) {
+                        .content_bottom_m {
+                            top: 90%;
+                            font-size: 16px;
+                        }
+                    }
+
+                    @media (min-width: 600px) {
+                        .content_bottom_m {
+                            top: 90.2%;
+                            font-size: 17px;
+                        }
+                    }
+
+                    @media (min-width: 650px) {
+                        .content_bottom_m {
+                            top: 90.4%;
+                            font-size: 18px;
+                        }
+                    }
+
+
+                    @media (min-width: 700px) {
+                        .content_bottom_m {
+                            top: 90.6%;
+                            font-size: 19px;
+                        }
+                    }
+
+                    @media (min-width: 750px) {
+                        .content_bottom_m {
+                            top: 90.8%;
+                            font-size: 20px;
+                        }
+                    }
+
+                    .content_bottom_pc {
+                        position: absolute;
+                        top: 88.4%;
+                        width: 100%;
+                        padding: 10px 10px;
+                    }
+
+                        .content_bottom_pc div {
+                            color: #E6C3A3;
+                            text-align: center;
+                            font-size: 0.9rem;
+                        }
+
+                        .content_bottom_pc p {
+                            margin-bottom: 0.2rem;
+                        }
+                </style>
+                <div id="div_bottom_m" class="content_bottom_m" style="display: none; background-color: rgb(168,16,34)">
+                    <div style="margin-bottom: 1rem;">
+                        <p>投资有风险入市需谨慎</p>
+                        <p>从事证券或期货交易，请通过合法证券期货经营机构进行</p>
+                        <p>合法机构名单可到中国证监会网站（WWW.CSRC.GOV.CN）查询</p>
+                        <p>本页面最终解释权归中信期货所有</p>
+                    </div>
+                    <div>
+                        <p>COPYRIGHT 2007-2021 CITIC FUTURES CO., LTD. ALL RIGHTS RESERVED</p>
+                        <p>中信期货有限公司 © 版权所有 粤ICP备14051234号</p>
+                        <p>
+                            应用版本：<label id="lbl_Version"></label>
+                            | 更新时间：<label id="lbl_UpdateTime"></label>
+                        </p>
+                        <p>应用名称：中信期货全功能版 | 开发者：中信期货有限公司</p>
+                    </div>
+                </div>
+                <div id="div_bottom_pc" class="content_bottom_pc" style="display: none;">
+                    <div style="margin-bottom: 1rem;">
+                        <p>从事证券或期货交易，请通过合法证券期货经营机构进行</p>
+                        <p>合法机构名单可到中国证监会网站（WWW.CSRC.GOV.CN）查询</p>
+                        <p>本页面最终解释权归中信期货所有</p>
+                    </div>
+                    <div style="color: #999; margin-top: 40px; font-size: 0.7rem;">
+                        <p style="display: inline-block; height: 55px; line-height: 55px; width: auto; border: 1px solid #999; padding: 0 20px;">应用版本：4.1.5 | 更新时间：2021-8-29 应用名称：中信期货全功能版 | 开发者：中信期货有限公司</p>
+                        <p>COPYRIGHT 2007-2021 CITIC FUTURES CO., LTD. ALL RIGHTS RESERVED</p>
+                        <p>中信期货有限公司 © 版权所有 粤ICP备14051234号</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="pc_baidu_bottom" style="position: fixed; left: 0; bottom: 0; height: 55px; width: 100%; background-color: #F6F7F9;">
+            <div style="width: 50%; float: left; padding: 5px 10px; height: 42px; vertical-align: middle;">
+                <a id="call2" href="https://v2.live800.com/live800/chatClient/chatbox.jsp?companyID=657916&configID=129248&jid=9949048082&skillId=7231&s=1" style="color: #333;">
+                    <p style="height: 45px; line-height: 45px; font-size: 16px; text-align: center;">
+                        <img src="../Images/uc_rgkf.png" style="height: 18px;" />
+                        人工客服
+                    </p>
+                </a>
+            </div>
+            <div style="width: 50%; float: left; padding: 5px 10px; height: 55px; vertical-align: middle;">
+                <a href="tel:400-990-8826" style="color: #333;">
+                    <p style="height: 45px; line-height: 45px; font-size: 16px; text-align: center;">
+                        <img src="../Images/uc_dhzx.png" style="height: 18px;" />
+                        电话咨询
+                    </p>
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="container pc_baidu" style="">
+        <img id="bg_imgpc" src="../Images/Baidu/bg_baidu_pc02.jpg" class="img-fluid" alt="" style="height:70%;width: 100%;" />
+        <img id="bg_imgpc" src="../Images/Baidu/bg_baidu_pc03.jpg" class="img-fluid" alt="" style="height:70%;width: 100%;" />
+    </div>
+    <div class="container pc_baidu" style="width: 100%;height: 60px;text-align: center;margin-top: 20px;">
+
+        <div style="margin-bottom: 1rem;">
+            <p style="color:#e5c0a1">从事证券或期货交易，请通过合法证券期货经营机构进行</p>
+            <p style="color:#e5c0a1">合法机构名单可到中国证监会网站（WWW.CSRC.GOV.CN）查询</p>
+            <p style="color:#e5c0a1">本页面最终解释权归中信期货所有</p>
+        </div>
+    </div>
+    <div class="container pc_baidu" style="width: 100%;height: 120px;text-align: center;margin-top: 20px;margin-bottom:50px;background-color:#dddddd">
+        <div style="color: #333333; font-size: 0.7rem;">
+            <p style="display: inline-block; height: 55px; line-height: 55px; width: auto; border: 1px solid #999; padding: 0 20px;margin-top: 20px;">
+                应用版本：
+                <span id="pc_ban">4.1.5</span>
+                | 更新时间：
+                <span id="pc_sj">2021-8-29</span>
+                应用名称：中信期货全功能版 | 开发者：中信期货有限公司
+            </p>
+            <p>COPYRIGHT 2007-2021 CITIC FUTURES CO., LTD. ALL RIGHTS RESERVED</p>
+            <p>中信期货有限公司 © 版权所有 粤ICP备14051234号</p>
+        </div>
+    </div>
+</body>
+</html>
