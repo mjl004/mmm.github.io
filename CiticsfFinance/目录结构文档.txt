@@ -1,0 +1,14 @@
+dist
+	--	src 项目文件
+		--	某功能项目
+			--	css 项目样式文件
+			--  api文件存放ajax数据应答处理
+			--  js文件存放数据逻辑层处理
+			--  routers文件存放路由
+			--  template文件存放模板
+	--	static	资源文件
+		--	css 公共样式
+		--	flexible rem单位处理
+		--	jquery jquery库
+		--	sea seajs库
+		--	vue vuejs库
